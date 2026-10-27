@@ -12,18 +12,24 @@ This project uses school-level educational and socioeconomic data to explore how
 
 - **Objective:** Investigate the relationship between socioeconomic conditions and average ACT/SAT scores among U.S. high schools.
 - **Domain:** Education, Social Inequality 
-- **Key Techniques:** Exploratory Data Analysis, Data Cleaning, Data Merging, Missing Value Imputation, Data Visualization
+- **Key Techniques:** Data Cleaning, Data Merging, Missing Value Imputation, Exploratory Data Analysis, Data Visualization, Linear Regressio
 
 ---
 
 ## Project Structure
 
 ```
-├── data/                 # Raw and processed data
-├── code/                 # Jupyter notebooks and Python scripts
-├── reports/              # Generated reports and visualizations
-├── requirements.txt      # Dependencies
-└── README.md             # Project documentation
+Education-Project/
+├── data/
+│   ├── EdGap_data.xlsx
+│   ├── ccd_sch_029_1617_w_la_11212017.csv
+│   └── education_clean.csv
+├── code/
+│   ├── education_data_preparation.ipynb
+│   └── education_eda.ipynb
+├── reports/
+├── requirements.txt
+└── README.md
 ```
 
 ---
@@ -66,83 +72,91 @@ Format: CSV
 
 Size: 102,183 observations and 65 variables
 
-Key Variables:
-
-School identification number
-
-Academic year
-
-State
-
-ZIP code
-
-School type
-
-School level
-
-Charter school status
-
-The two datasets are merged using their common school identification number to combine socioeconomic characteristics with school information.
-
-Data License: To be confirmed based on the original data providers.
+Key variables include:
+- School identification number
+- Academic year
+- State and ZIP code
+- School type and level
+- Charter school status
+The two datasets are merged using their common school identification number to combine socioeconomic characteristics with school-level information.
 
 ---
 
 ## Analysis
 
-The data preparation and exploratory analysis are performed in education_data_preparation.ipynb.
+The project uses two Jupyter notebooks:
+
+education_data_preparation.ipynb — Loads, cleans, merges, and prepares the datasets.
+
+education_eda.ipynb — Explores relationships between socioeconomic variables and average ACT scores and evaluates a regression model.
 
 1. Data Exploration
-
-Imported and examined both datasets using Pandas.
-
-Checked column names, data types, missing values, and dataset sizes.
-
-Used scatterplots and pair plots to explore relationships between socioeconomic variables and average ACT scores.
-
+Both datasets were imported and examined using pandas. The initial exploration included checking dataset sizes, column names, data types, missing values, and summary statistics.
 2. Data Preparation
+The following steps were performed:
+- Selected relevant variables from both datasets.
+- Renamed columns using lowercase and snake_case formatting.
+- Converted school identifiers into compatible data types.
+- Merged the datasets using a left join.
+- Filtered the dataset to include high schools.
+- Checked for duplicate records and invalid observations.
+3. Data Cleaning and Missing Values
+Data cleaning included identifying invalid ACT scores and lunch participation percentages, examining missing values, and removing observations without valid average ACT scores.
 
-Selected relevant variables from the school information dataset.
+Missing numerical socioeconomic values were estimated using Scikit-learn's IterativeImputer.
 
-Renamed columns to improve readability and consistency.
+The cleaned dataset was exported as:
 
-Converted school identifiers to compatible data types.
+data/education_clean.csv
 
-Merged the datasets using a left join to retain all EdGap records.
+This file is used for exploratory analysis and predictive modeling.
+4. Exploratory Data Analysis (EDA)
+The EDA notebook examines relationships between socioeconomic factors and average ACT scores.
 
-3. Data Cleaning and Quality Control
+The analysis includes:
+- Correlation matrices to identify relationships between numerical variables.
+- Pair plots and scatterplots to visualize relationships with ACT scores.
+- Boxplots to examine the distribution of variables and identify potential outliers.
+- Comparisons between charter and non-charter schools.
+The analysis also includes derived variables to make selected predictors easier to interpret.
+5. Predictive Modeling
+Two linear regression models were developed to investigate whether socioeconomic factors can predict average ACT scores.
 
-Examined minimum and maximum values to identify invalid observations.
+Model 1: Socioeconomic Factors
 
-Replaced out-of-range ACT scores and free/reduced-price lunch percentages with missing values.
+This model uses the following predictors:
+- Unemployment rate
+- Percentage of adults with a college degree
+- Percentage of children living in married-couple families
+- Median household income
+- Percentage of students receiving free or reduced-price lunch
+Model 2: Socioeconomic Factors + Charter Status
 
-Filtered the dataset to include only high schools.
+The second model includes the same socioeconomic predictors, with charter school status added as an additional variable.
 
-Checked for duplicate records.
+The purpose is to determine whether including school type improves prediction accuracy.
 
-Examined missing values and geographic coverage.
+The models were evaluated using a training and testing split, with three performance metrics:
+- Mean Absolute Error (MAE): Measures the average difference between predicted and actual ACT scores.
+- Root Mean Squared Error (RMSE): Measures prediction error while giving more weight to larger errors.
+- R-squared (R²): Measures how much variation in ACT scores the model explains.
+- Both models achieved an R-squared value of approximately 0.615, indicating that they explain about 61.5% of the variation in ACT scores in the test data, relative to the test-set mean.
 
-Removed observations without valid average ACT scores.
+The MAE of 1.161 indicates that predicted ACT scores differ from actual scores by approximately 1.16 points on average.
 
-4. Missing Value Imputation
-
-Applied Scikit-learn's IterativeImputer to estimate missing numerical socioeconomic values.
-
-Checked the dataset after imputation to confirm that no missing values remained in the selected variables.
-
-5. Data Export
-
-The cleaned dataset is exported as:
-
-education_clean.csv
-
-This file can be used for further statistical analysis and modeling.
+Adding charter school status did not noticeably improve the model's performance, as both models produced the same evaluation results when rounded to three decimal places.
 
 ---
 
 ## Results
 
-Include a short discussion of the findings and what they imply.
+The exploratory analysis suggests that socioeconomic conditions are associated with average ACT performance.
+
+School lunch participation showed a strong negative correlation with average ACT scores (approximately r = -0.785). This suggests that schools with higher percentages of students receiving lunch assistance tend to have lower average ACT scores.
+
+The regression results also indicate that socioeconomic factors have meaningful predictive value. However, adding charter school status did not substantially improve prediction accuracy in this analysis.
+
+The dataset contains considerably fewer charter schools than non-charter schools, which may limit the information available for evaluating differences between these groups.
 
 ---
 
